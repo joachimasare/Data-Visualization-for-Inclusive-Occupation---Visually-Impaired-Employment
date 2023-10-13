@@ -14,7 +14,7 @@ nav {
 
 #graph {
     width: 100vw;
-    height: 85vh;
+    height: calc(100vh - 4rem - 2rem); /* subtracting padding from nav and margin from #graph */
     background-color: #000;
     border-radius: 15px;
     margin: 2rem 0;

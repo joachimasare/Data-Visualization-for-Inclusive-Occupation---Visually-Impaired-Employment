@@ -1,16 +1,19 @@
 const svg = d3.select("#graph")
     .attr("width", window.innerWidth)
-    .attr("height", window.innerHeight - [height-of-nav]);
-const width = svg.attr("width");
-const height = svg.attr("height");
+    .attr("height", window.innerHeight - 64 - 32); // Adjust height by subtracting the padding and margin
+
+svg.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
+
+//const width = svg.attr("width");
+//const height = svg.attr("height");
 
 const zoom = d3.zoom()
-    .scaleExtent([0.5, 5])  // Limiting the zoom scale (min, max)
+    .scaleExtent([0.1, 5])  // Limiting the zoom scale (min, max)
     .on('zoom', (event) => {
         svg.attr('transform', event.transform);
     });
 
-svg.call(zoom);
+svg.call(zoom.transform, d3.zoomIdentity);
 
 
 function drag(simulation) {
@@ -67,7 +70,7 @@ d3.json("/occupations").then(function(allOccupations) {
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(links).id(d => d.id).distance(100))
             .force("charge", d3.forceManyBody().strength(-500))
-            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("center", d3.forceCenter(window.innerWidth / 2, (window.innerHeight - 64 - 32) / 2))
             .force("collision", d3.forceCollide().radius(20)); // Add this line
 
         const link = svg.append("g")
