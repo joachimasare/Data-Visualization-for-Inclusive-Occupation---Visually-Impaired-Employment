@@ -4,17 +4,17 @@ const svg = d3.select("#graph")
 
 svg.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
 
-//const width = svg.attr("width");
-//const height = svg.attr("height");
+const mainGroup = svg.append('g'); // This is our main group.
 
 const zoom = d3.zoom()
     .scaleExtent([0.1, 5])  // Limiting the zoom scale (min, max)
     .on('zoom', (event) => {
-        svg.attr('transform', event.transform);
+        mainGroup.attr('transform', event.transform);
     });
 
-svg.call(zoom.transform, d3.zoomIdentity.scale(1))  // Placeholder, we will replace this
+svg.call(zoom.transform, d3.zoomIdentity.scale(1))
     .call(zoom);
+
 function drag(simulation) {
     function dragstarted(event, d) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -90,15 +90,15 @@ d3.json("/occupations").then(function(allOccupations) {
             .force("collision", d3.forceCollide().radius(20)); // Add this line
 
 
-        const link = svg.append("g")
+        const link = mainGroup.append("g")  // Change from svg to mainGroup
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.6)
             .selectAll("line")
             .data(links)
             .join("line")
-            .attr("stroke-width", d => Math.sqrt(d.value) * 2); // Adjust stroke width factor as per preference
+            .attr("stroke-width", d => Math.sqrt(d.value) * 2);
 
-        const node = svg.append("g")
+        const node = mainGroup.append("g")  // Change from svg to mainGroup
             .attr("stroke", "#fff")
             .attr("stroke-width", 1.5)
             .selectAll("circle")
