@@ -1,3 +1,16 @@
+let tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")  // this is optional, but allows for CSS styling
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("background", "#eee")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("box-shadow", "0px 0px 6px #aaa")
+    .text("Tooltip");
+
+
 const svg = d3.select("#graph")
     .attr("width", window.innerWidth)
     .attr("height", window.innerHeight - 64 - 32); // Adjust height by subtracting the padding and margin
@@ -65,7 +78,8 @@ d3.json("/occupations").then(function(allOccupations) {
     const nodes = allOccupations.map(occupation => ({
         id: occupation["SOC Code"],
         title: occupation["Occupational Title"],
-        group: occupation["SOC Group"]
+        group: occupation["SOC Group"],
+        blind_work: occupation["Blind Employed"]
     }));
 
     // To store all the links
@@ -108,12 +122,23 @@ d3.json("/occupations").then(function(allOccupations) {
             .data(nodes)
             .join("circle")
             .attr("r", 5)
-            .attr("fill", "#69b3a2")
-            .on("mouseover", d => {
-                // Add code to show tooltip with d.title and other details if needed
+            .attr("fill", d => d.blind_work ? "#CDFF64" : "#69b3a2") // Use a conditional to set the fill color based on the blind_work attribute
+            .on("mouseover", (event, d) => {
+                tooltip.transition()
+                       .duration(100)
+                       .style("visibility", "visible");
+                tooltip.html("<strong>Job Title:</strong> " + d.title + "<br/>" +
+                             "<strong>SOC Code:</strong> " + d.id + "<br/>" +
+                             "<strong>Sector:</strong> " + d.group)
+                 .style("top", (event.pageY - 15) + "px")  /* Center the tooltip vertically relative to the node */
+                 .style("left", (event.pageX + 15) + "px"); /* Position the tooltip to the right of the node so the arrow points to the node */
+          
+          
             })
-            .on("mouseout", d => {
-                // Add code to hide tooltip
+            .on("mouseout", (event, d) => {  // Note the change in arguments
+                tooltip.transition()
+                       .duration(500)
+                       .style("visibility", "hidden");
             })
             .call(drag(simulation));
         

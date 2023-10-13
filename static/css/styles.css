@@ -4,6 +4,26 @@ body {
     margin: 0;
     padding: 0;
 }
+.tooltip {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    pointer-events: none; /* this ensures that the tooltip doesn't interfere with mouse events */
+}
+.tooltip::before {
+    content: '';
+    position: absolute;
+    right: 100%; /* Places the arrow to the left of the tooltip box */
+    top: 20%; /* Centers the arrow vertically */
+    margin-top: -5px;  /* Adjusts to center the arrow properly */
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent white transparent transparent; /* Makes the arrow point leftwards with a black color */
+}
+
+
+
+
+
 
 nav {
     background-color: #090C15;
