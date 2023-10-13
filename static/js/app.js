@@ -13,9 +13,8 @@ const zoom = d3.zoom()
         svg.attr('transform', event.transform);
     });
 
-svg.call(zoom.transform, d3.zoomIdentity);
-
-
+svg.call(zoom.transform, d3.zoomIdentity.scale(1))  // Placeholder, we will replace this
+    .call(zoom);
 function drag(simulation) {
     function dragstarted(event, d) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -40,7 +39,24 @@ function drag(simulation) {
         .on("end", dragended);
 }
 
+function fitGraphToContainer() {
+    // Calculate the bounds of the graph
+    let bounds = svg.node().getBBox();
 
+    // Calculate scale factors
+    let xScale = (window.innerWidth - 32) / bounds.width;  // adjusted for some padding
+    let yScale = (window.innerHeight - 64 - 32) / bounds.height;
+    
+    let scale = Math.min(xScale, yScale);
+
+    // Calculate translate factors to center the graph
+    let translate = [
+        (window.innerWidth - bounds.width * scale) / 2 - bounds.x * scale,
+        (window.innerHeight - 64 - 32 - bounds.height * scale) / 2 - bounds.y * scale
+    ];
+
+    svg.call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));  // Apply initial zoom settings
+}
 // Fetch all occupations first
 d3.json("/occupations").then(function(allOccupations) {
     const nodes = allOccupations.map(occupation => ({
@@ -73,6 +89,7 @@ d3.json("/occupations").then(function(allOccupations) {
             .force("center", d3.forceCenter(window.innerWidth / 2, (window.innerHeight - 64 - 32) / 2))
             .force("collision", d3.forceCollide().radius(20)); // Add this line
 
+
         const link = svg.append("g")
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.6)
@@ -96,6 +113,10 @@ d3.json("/occupations").then(function(allOccupations) {
                 // Add code to hide tooltip
             })
             .call(drag(simulation));
+        
+        simulation.on("end", () => {  // Once simulation stabilizes (after the "tick" events are done)
+            fitGraphToContainer();  // Call our function to fit the graph in the container
+            });
 
         simulation.on("tick", () => {
             link.attr("x1", d => d.source.x)
