@@ -41,7 +41,7 @@ function drag(simulation) {
 
 function fitGraphToContainer() {
     // Calculate the bounds of the graph
-    let bounds = svg.node().getBBox();
+    let bounds = mainGroup.node().getBBox();
 
     // Calculate scale factors
     let xScale = (window.innerWidth - 32) / bounds.width;  // adjusted for some padding
@@ -55,7 +55,10 @@ function fitGraphToContainer() {
         (window.innerHeight - 64 - 32 - bounds.height * scale) / 2 - bounds.y * scale
     ];
 
-    svg.call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));  // Apply initial zoom settings
+    // Apply transition for smooth zoom and pan
+    svg.transition()
+       .duration(2000)  // Adjust the duration as per your preference
+       .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 // Fetch all occupations first
 d3.json("/occupations").then(function(allOccupations) {
