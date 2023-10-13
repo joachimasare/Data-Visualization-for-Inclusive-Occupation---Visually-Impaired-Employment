@@ -1,6 +1,17 @@
-const svg = d3.select("#graph");
+const svg = d3.select("#graph")
+    .attr("width", window.innerWidth)
+    .attr("height", window.innerHeight - [height-of-nav]);
 const width = svg.attr("width");
 const height = svg.attr("height");
+
+const zoom = d3.zoom()
+    .scaleExtent([0.5, 5])  // Limiting the zoom scale (min, max)
+    .on('zoom', (event) => {
+        svg.attr('transform', event.transform);
+    });
+
+svg.call(zoom);
+
 
 function drag(simulation) {
     function dragstarted(event, d) {
@@ -54,9 +65,10 @@ d3.json("/occupations").then(function(allOccupations) {
     // Once all similar occupations are fetched and links are formed
     Promise.all(promises).then(() => {
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id))
-            .force("charge", d3.forceManyBody().strength(-400))
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-500))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(20)); // Add this line
 
         const link = svg.append("g")
             .attr("stroke", "#999")
