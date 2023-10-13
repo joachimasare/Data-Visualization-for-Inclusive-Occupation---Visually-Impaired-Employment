@@ -1,3 +1,7 @@
+let node;
+let link;
+let colorMode = false;
+
 let tooltip = d3.select("body")
     .append("div")
     .attr("class", "tooltip")  // this is optional, but allows for CSS styling
@@ -10,7 +14,42 @@ let tooltip = d3.select("body")
     .style("box-shadow", "0px 0px 6px #aaa")
     .text("Tooltip");
 
-    
+const colorMapping = {
+    "Management": "#dcbeff",
+    "Business and Financial Operations": "#911eb4",
+    "Computer and Mathematical": "#f032e6",
+    "Architecture and Engineering": "#4363d8",
+    "Life, Physical, and Social Science": "#42d4f4",
+    "Community and Social Service": "#000075",
+    "Legal Occupations": "#469990",
+    "Educational Instruction and Library": "#aaffc3",
+    "Arts, Design, Entertainment, Sports, and Media": "#3cb44b",
+    "Healthcare Practitioners and Technical": "#dfef45",
+    "Healthcare Support": "#ffe119",
+    "Protective Service": "#f58231",
+    "Food Preparation and Serving Related": "#e6194b",
+    "Building and Grounds Cleaning and Maintenance": "#fabeb4",
+    "Personal Care and Service": "#ffd8b1",
+    "Sales and Related": "#fffac8",
+    "Office and Administrative Support": "#800000",
+    "Farming, Fishing, and Forestry": "#9a6324",
+    "Construction and Extraction": "#808000",
+    "Installation, Maintenance, and Repair": "#ff9faf",
+    "Production": "#50ffc0",
+    "Transportation and Material Moving": "#5200ff"
+};
+
+
+function updateColors() {
+    if (colorMode) {
+        node.attr("fill", d => colorMapping[d.group]);
+        link.attr("stroke", d => colorMapping[d.source.group]);
+    } else {
+        node.attr("fill", d => d.blind_work ? "#CDFF64" : "#363636");
+        link.attr("stroke", "#989898");
+    }
+}
+
 
 const svg = d3.select("#graph")
     .attr("width", window.innerWidth)
@@ -92,6 +131,15 @@ function fitGraphToContainer() {
        .duration(700)  // Adjust the duration as per your preference
        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
+
+d3.select("body").append("button")
+    .attr("id", "toggleButton")
+    .text("Toggle Color Mode")
+    .on("click", function() {
+        colorMode = !colorMode;
+        updateColors();
+});
+
 // Fetch all occupations first
 d3.json("/occupations").then(function(allOccupations) {
     const nodes = allOccupations.map(occupation => ({
@@ -125,8 +173,7 @@ d3.json("/occupations").then(function(allOccupations) {
             .force("center", d3.forceCenter(window.innerWidth / 2, (window.innerHeight - 64 - 32) / 2))
             .force("collision", d3.forceCollide().radius(20)); // Add this line
 
-
-        const link = mainGroup.append("g")  // Change from svg to mainGroup
+        link = mainGroup.append("g")  // Change from svg to mainGroup
             .attr("stroke", "#989898")
             .attr("stroke-opacity", 0.6)
             .selectAll("line")
@@ -134,7 +181,7 @@ d3.json("/occupations").then(function(allOccupations) {
             .join("line")
             .attr("stroke-width", d => Math.sqrt(d.value) * 2);
 
-        const node = mainGroup.append("g")  // Change from svg to mainGroup
+        node = mainGroup.append("g")  // Change from svg to mainGroup
             .attr("stroke", "#fff")
             .attr("stroke-width", 1)
             .selectAll("circle")
@@ -153,7 +200,6 @@ d3.json("/occupations").then(function(allOccupations) {
                  .style("top", (event.pageY - 15) + "px")  /* Center the tooltip vertically relative to the node */
                  .style("left", (event.pageX + 15) + "px"); /* Position the tooltip to the right of the node so the arrow points to the node */
           
-          
             })
             .on("mouseout", (event, d) => {  // Note the change in arguments
                 tooltip.transition()
@@ -161,7 +207,8 @@ d3.json("/occupations").then(function(allOccupations) {
                        .style("visibility", "hidden");
             })
             .call(drag(simulation));
-        
+        updateColors(); 
+
         simulation.on("end", () => {  // Once simulation stabilizes (after the "tick" events are done)
             fitGraphToContainer();  // Call our function to fit the graph in the container
             });
