@@ -10,12 +10,31 @@ let tooltip = d3.select("body")
     .style("box-shadow", "0px 0px 6px #aaa")
     .text("Tooltip");
 
+    
 
 const svg = d3.select("#graph")
     .attr("width", window.innerWidth)
     .attr("height", window.innerHeight - 64 - 32); // Adjust height by subtracting the padding and margin
 
 svg.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
+
+const defs = svg.append('defs');
+
+const filter = defs.append('filter')
+    .attr('id', 'glow')
+    .attr('x', '-50%') // Start 50% to the left of the object
+    .attr('y', '-50%') // Start 50% above the object
+    .attr('width', '500%') // Span twice the width of the object
+    .attr('height', '500%'); // Span twice the height of the object
+
+filter.append('feGaussianBlur')
+    .attr('stdDeviation', '3.5')
+    .attr('result', 'coloredBlur');
+
+const feMerge = filter.append('feMerge');
+feMerge.append('feMergeNode').attr('in', 'coloredBlur');
+feMerge.append('feMergeNode').attr('in', 'SourceGraphic');
+
 
 const mainGroup = svg.append('g'); // This is our main group.
 
@@ -70,7 +89,7 @@ function fitGraphToContainer() {
 
     // Apply transition for smooth zoom and pan
     svg.transition()
-       .duration(2000)  // Adjust the duration as per your preference
+       .duration(700)  // Adjust the duration as per your preference
        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 // Fetch all occupations first
@@ -108,7 +127,7 @@ d3.json("/occupations").then(function(allOccupations) {
 
 
         const link = mainGroup.append("g")  // Change from svg to mainGroup
-            .attr("stroke", "#999")
+            .attr("stroke", "#989898")
             .attr("stroke-opacity", 0.6)
             .selectAll("line")
             .data(links)
@@ -117,12 +136,13 @@ d3.json("/occupations").then(function(allOccupations) {
 
         const node = mainGroup.append("g")  // Change from svg to mainGroup
             .attr("stroke", "#fff")
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", 1)
             .selectAll("circle")
             .data(nodes)
             .join("circle")
-            .attr("r", 5)
-            .attr("fill", d => d.blind_work ? "#CDFF64" : "#69b3a2") // Use a conditional to set the fill color based on the blind_work attribute
+            .attr("r", 20)
+            .attr("fill", d => d.blind_work ? "#CDFF64" : "#363636") // Use a conditional to set the fill color based on the blind_work attribute
+            .attr("filter", d => d.blind_work ? "url(#glow)" : "")
             .on("mouseover", (event, d) => {
                 tooltip.transition()
                        .duration(100)
