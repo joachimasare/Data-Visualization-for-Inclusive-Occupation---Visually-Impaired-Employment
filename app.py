@@ -51,6 +51,14 @@ similarity_matrix = cosine_similarity(skills_data)
 def home():
     return render_template('index.html')
 
+@app.route('/job-search-sighted')
+def job_search_sighted():
+    return render_template('job_search_sighted.html')
+
+@app.route('/explore')
+def explore():
+    return render_template('explore.html')
+
 @app.route('/occupations', methods=['GET'])
 def get_occupations():
     occupations = data[['SOC Code', 'SOC Group', 'Blind Employed', 'Occupational Title_IDB', 'Occupational Title_BLS']].copy()

@@ -64,6 +64,11 @@ nav {
     padding: 1rem 2rem; /* Increased padding for better appearance */
 }
 
+nav a {
+    text-decoration: none; /* Removes the underline */
+    color: inherit; /* Inherits the color from its parent or from other defined styles */
+}
+
 .left-section, .right-section {
     display: flex;
     align-items: center;
@@ -128,7 +133,11 @@ nav {
     font-family: 'Roboto';
     font-weight: 750;
     color: #00F6FF;
+    transition: color 0.3s ease; /* Adding a smooth color transition for hover effects, if desired */
+}
 
+.explore:hover {
+    color: #23aabc; /* Slightly darker shade for hover effect, you can adjust as needed */
 }
 
 /*#graph {
@@ -146,3 +155,13 @@ nav {
     border-radius: 15px;
     margin: 0.5rem 0.5rem;     /* added 0.5rem to both sides for space */
 }
+#sightedgraph {
+    position:relative;
+    width: calc(100vw - 1rem);  /* reducing width by 1rem total to create 0.5rem space on both sides */
+    height: calc(100vh - 5.9rem); /* adjusted for navbar height, potential controls, and some extra space */
+    background-color: #000;
+    border-radius: 15px;
+    margin: 0.5rem 0.5rem;     /* added 0.5rem to both sides for space */
+}
+
+
