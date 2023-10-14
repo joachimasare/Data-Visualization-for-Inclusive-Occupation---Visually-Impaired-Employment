@@ -40,7 +40,7 @@ d3.json("/occupations").then(function(allOccupations) {
     // Create a force simulation for the occupation circles
     const simulation = d3.forceSimulation(nodes)
         .force("center", d3.forceCenter(window.innerWidth / 2, (window.innerHeight - 64 - 32) / 2))
-        .force("collide", d3.forceCollide().radius(5)) // Radius of 5 to avoid overlapping
+        .force("collide", d3.forceCollide().radius(6)) // Radius of 5 to avoid overlapping
         .on("tick", ticked);
 
     function ticked() {
@@ -91,13 +91,13 @@ function visualizeData(svg, occupationData) {
        .append("text")
        .attr("class", "cluster-label")
        .attr("x", d => d.cx)
-       .attr("y", d => d.cy + d.radius + 70) // Positioned slightly above the cluster
+       .attr("y", d => d.cy + d.radius + 80) // Positioned slightly above the cluster
        .attr("text-anchor", "middle") // To center the text horizontally
        .attr("dy", ".2em") // To center the text vertically
        .text(d => d.name)
        .style("fill", "#B0B0B0") // White text color
-       .style("font-size", "12px")
-       .style("font-weight", "700px")
+       .style("font-size", "16px")
+       .style("font-weight", "800px")
        .style("font-family", "Roboto");
 
     // Positioning the occupation circles around their respective cluster circle
