@@ -39,53 +39,6 @@ const colorMapping = {
     "Transportation and Material Moving": "#5200ff"
 };
 
-const toggleContainer = d3.select("body").append("div")
-    .attr("class", "toggle-container");
-
-const toggleButton = toggleContainer.append("button")
-    .attr("class", "toggle-button")
-    .attr("id", "toggleBtn")
-    .text("Sectors Focused")
-    .on("click", function() {
-        toggleModes();
-    });
-
-const toggleOptions = toggleContainer.append("div")
-    .attr("class", "toggle-options");
-
-toggleOptions.append("span")
-    .attr("id", "sectorsFocus")
-    .attr("class", "active")
-    .text("Sectors Focused")
-    .on("click", function() {
-        setMode(true);
-    });
-
-toggleOptions.append("span")
-    .attr("id", "blindFocus")
-    .text("Blind Focused")
-    .on("click", function() {
-        setMode(false);
-    });
-
-
-function toggleModes() {
-    setMode(!colorMode);
-}
-
-function setMode(isSectorFocused) {
-    colorMode = isSectorFocused;
-    if (colorMode) {
-        d3.select("#sectorsFocus").attr("class", "active");
-        d3.select("#blindFocus").attr("class", "");
-        d3.select("#toggleBtn").text("Sectors Focused");
-    } else {
-        d3.select("#sectorsFocus").attr("class", "");
-        d3.select("#blindFocus").attr("class", "active");
-        d3.select("#toggleBtn").text("Blind Focused");
-    }
-    updateColors();
-}
 
 function updateColors() {
     if (colorMode) {
@@ -96,8 +49,6 @@ function updateColors() {
         link.attr("stroke", "#989898");
     }
 }
-
-
 
 
 const svg = d3.select("#graph")
@@ -181,13 +132,13 @@ function fitGraphToContainer() {
        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 
-//d3.select("body").append("button")
-//    .attr("id", "toggleButton")
-//    .text("Toggle Color Mode")
-//    .on("click", function() {
-//        colorMode = !colorMode;
-//        updateColors();
-//});
+d3.select("body").append("button")
+    .attr("id", "toggleButton")
+    .text("Toggle Color Mode")
+    .on("click", function() {
+        colorMode = !colorMode;
+        updateColors();
+});
 
 // Fetch all occupations first
 d3.json("/occupations").then(function(allOccupations) {
