@@ -1,6 +1,6 @@
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #161B29;
+    background-color: #5988e5;
     margin: 0;
     padding: 0;
 }
@@ -20,8 +20,31 @@ body {
     border-color: transparent white transparent transparent; /* Makes the arrow point leftwards with a black color */
 }
 
+.toggle-container {
+    display: flex;
+    align-items: center;
+}
 
+.toggle-button {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
 
+.toggle-options span {
+    margin: 0 10px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.toggle-options .active {
+    color: #FFFFFF; /* Active Color */
+}
 
 
 
