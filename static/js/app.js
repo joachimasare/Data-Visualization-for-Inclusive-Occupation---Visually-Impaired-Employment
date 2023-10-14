@@ -38,6 +38,77 @@ const colorMapping = {
     "Production": "#50ffc0",
     "Transportation and Material Moving": "#5200ff"
 };
+/* const bodyContainer = d3.select("body");
+let toggleContainer = bodyContainer.select(".toggle-container");
+
+// Check if toggleContainer already exists
+if (toggleContainer.empty()) {
+    toggleContainer = bodyContainer.append("div")
+        .attr("class", "toggle-container");
+}
+
+let toggleButton = toggleContainer.select("#toggleBtn");
+if (toggleButton.empty()) {
+    toggleButton = toggleContainer.append("button")
+        .attr("class", "toggle-button")
+        .attr("id", "toggleBtn")
+        .text("Sectors Focused")
+        .on("click", function() {
+            toggleModes();
+        });
+}
+
+const toggleOptions = toggleContainer.append("div")
+    .attr("class", "toggle-options");
+
+// Check if the span elements already exist, if not append them
+if (toggleOptions.select("#sectorsFocus").empty()) {
+    toggleOptions.append("span")
+        .attr("id", "sectorsFocus")
+        .attr("class", "active")
+        .text("Sectors Focused")
+        .on("click", function() {
+            setMode(true);
+        });
+}
+
+if (toggleOptions.select("#blindFocus").empty()) {
+    toggleOptions.append("span")
+        .attr("id", "blindFocus")
+        .text("Blind Focused")
+        .on("click", function() {
+            setMode(false);
+        });
+}
+
+function toggleModes() {
+    setMode(!colorMode);
+}
+
+function setMode(isSectorFocused) {
+    colorMode = isSectorFocused;
+    if (colorMode) {
+        d3.select("#sectorsFocus").attr("class", "active");
+        d3.select("#blindFocus").attr("class", "");
+        d3.select("#toggleBtn").text("Sectors Focused");
+    } else {
+        d3.select("#sectorsFocus").attr("class", "");
+        d3.select("#blindFocus").attr("class", "active");
+        d3.select("#toggleBtn").text("Blind Focused");
+    }
+    updateColors();
+}
+
+function updateColors() {
+    // Assuming you have the `node` and `link` variables defined somewhere in your script.
+    if (colorMode) {
+        node.attr("fill", d => colorMapping[d.group]);
+        link.attr("stroke", d => colorMapping[d.source.group]);
+    } else {
+        node.attr("fill", d => d.blind_work ? "#CDFF64" : "#363636");
+        link.attr("stroke", "#989898");
+    }
+} */
 
 
 function updateColors() {
@@ -128,7 +199,7 @@ function fitGraphToContainer() {
 
     // Apply transition for smooth zoom and pan
     svg.transition()
-       .duration(700)  // Adjust the duration as per your preference
+       .duration(500)  // Adjust the duration as per your preference
        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 
