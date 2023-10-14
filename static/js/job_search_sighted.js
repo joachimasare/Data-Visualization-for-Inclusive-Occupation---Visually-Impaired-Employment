@@ -69,7 +69,7 @@ function visualizeData(svg, occupationData) {
     clusterData.forEach((cluster, i) => {
         cluster.cx = (i % numOfColumns + 0.5) * horizontalSpacing;
         cluster.cy = (Math.floor(i / numOfColumns) + 0.5) * verticalSpacing;
-        cluster.radius = 50 + (cluster.size / 873) * 150;
+        cluster.radius = -0.12 + (cluster.size / 873) * 120;
     });
 
     // Drawing the cluster circles
@@ -80,10 +80,25 @@ function visualizeData(svg, occupationData) {
        .attr("class", "cluster")
        .attr("cx", d => d.cx)
        .attr("cy", d => d.cy)
-       .attr("r", d => d.radius)
+       .attr("r", d => d.radius )
        .attr("fill", "none") // No fill to make it transparent
        .attr("stroke", "#585858") // Stroke color for the circumference
-       .attr("stroke-width", 2);
+       .attr("stroke-width", 0);
+    
+    svg.selectAll(".cluster-label")
+       .data(clusterData)
+       .enter()
+       .append("text")
+       .attr("class", "cluster-label")
+       .attr("x", d => d.cx)
+       .attr("y", d => d.cy + d.radius + 70) // Positioned slightly above the cluster
+       .attr("text-anchor", "middle") // To center the text horizontally
+       .attr("dy", ".2em") // To center the text vertically
+       .text(d => d.name)
+       .style("fill", "#B0B0B0") // White text color
+       .style("font-size", "12px")
+       .style("font-weight", "700px")
+       .style("font-family", "Roboto");
 
     // Positioning the occupation circles around their respective cluster circle
     occupationData.forEach((occupation) => {
