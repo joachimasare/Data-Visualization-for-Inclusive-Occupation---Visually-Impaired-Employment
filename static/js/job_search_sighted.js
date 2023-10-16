@@ -5,6 +5,8 @@ const svg = d3.select("#sightedgraph")
 
 // Create a container for the visualization
 const container = svg.append("g");
+
+
 let simulation;
 
 let clusterData = [];
@@ -46,8 +48,6 @@ function zoomToGroup(cluster) {
 
     svg.transition().duration(1000).call(zoomBehavior.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
-
-
 
 
 function filterData() {
@@ -135,7 +135,10 @@ d3.json("/occupations").then(function(allOccupations) {
         id: occupation["SOC Code"],
         title: occupation["Occupational Title"],
         group: occupation["SOC Group"],
-        blind_work: occupation["Blind Employed"]
+        blind_work: occupation["Blind Employed"],
+        employment: occupation["Employment(2022)"],
+        projected_growth: occupation["Projected Growth"]
+        
     }));
 
 
@@ -291,33 +294,32 @@ function handleNodeDoubleClick(event, clickedNode) {
            .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
         
         // TODO: Update the visualization to form the orbital map
-        createOrbitalMap(clickedNode, similarOccupations, nodes);
+        //createOrbitalMap(clickedNode, similarOccupations, occupationData);
     });
 }
-
-function createOrbitalMap(centerNode, similarOccupations, nodes) {
+/* 
+function createOrbitalMap(centerNode, similarOccupations, occupationData) {
     // Position the center node
     centerNode.fx = window.innerWidth / 2;
     centerNode.fy = (window.innerHeight - 64 - 32) / 2;
     
     // Position the similar nodes in orbits around the center node
-    similarOccupations.forEach((node, i) => {
+    similarOccupations.forEach((simNode, i) => {
         const theta = i * (2 * Math.PI) / similarOccupations.length;
-        const orbitRadius = 100;
-        const originalNode = occupationData.find(d => d.id === node["SOC Code"]);
+        const orbitRadius = 100 + i * 30; // Radius increased for each subsequent node
+        const nodeInOccupationData = occupationData.find(d => d.id === simNode["SOC Code"]);
         
-        if(originalNode) {
-            originalNode.fx = centerNode.fx + Math.cos(theta) * orbitRadius;
-            originalNode.fy = centerNode.fy + Math.sin(theta) * orbitRadius;
+        if (nodeInOccupationData) {
+            nodeInOccupationData.fx = centerNode.fx + Math.cos(theta) * orbitRadius;
+            nodeInOccupationData.fy = centerNode.fy + Math.sin(theta) * orbitRadius;
         } else {
-            console.warn("Node not found in occupationData:", node["SOC Code"]);
+            console.warn(`Node not found in occupationData: ${simNode["SOC Code"]}`);
         }
     });
     
-    
     // Update the visualization
     svg.selectAll(".occupation")
-       .data(nodes)  // Ensure the data is updated
+       .data(occupationData, d => d.id)  // Ensure the data is updated using a key function
        .transition()
        .duration(1000)
        .attr("cx", d => d.fx || d.x)
@@ -326,3 +328,4 @@ function createOrbitalMap(centerNode, similarOccupations, nodes) {
     // Consider stopping the simulation to prevent it from overriding your manual positioning
     simulation.stop();
 }
+ */
