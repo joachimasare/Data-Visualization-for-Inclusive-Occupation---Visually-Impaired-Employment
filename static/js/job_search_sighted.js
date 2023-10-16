@@ -6,9 +6,7 @@ const svg = d3.select("#sightedgraph")
 // Create a container for the visualization
 const container = svg.append("g");
 
-
 let simulation;
-
 let clusterData = [];
 
 // Set up the zoom behavior
@@ -18,7 +16,6 @@ const zoomBehavior = d3.zoom()
 
 // Add zoom behavior to the SVG node
 svg.call(zoomBehavior);
-
 
 function zoomed({ transform }) {
     container.attr("transform", transform);
@@ -287,16 +284,52 @@ function handleNodeDoubleClick(event, clickedNode) {
     console.log("Double-clicked:", clickedNode);
     d3.json(`/similar_occupations/${clickedNode.id}`).then(similarOccupations => {
         console.log("Fetched similar occupations:", similarOccupations);
+        svg.selectAll(".occupation")
+            .transition()
+            .duration(1000)
+            .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
+        //svg.selectAll(".cluster-label").style("opacity", 1);
+
+        d3.select("#recommendedJobsBtn")
+            .classed("hidden", false)
+            .style("transform", "translateY(0%)")
+            .on("click", function() {
+                d3.select("#jobsPanel").style("transform", "translateX(0%)");
+                let panelContent = "";
+                similarOccupations.forEach(job => {
+                    const jobMarketShare = (job["Employment(2022)"] / 147886000) * 100;
+                    panelContent += `
+                        <div class="jobDetail">
+                            <h3>${job["Occupational Title"]}</h3>
+                            <p>SOC Code: ${job["SOC Code"]}</p>
+                            <p>Employment (2022): ${job["Employment(2022)"]}</p>
+                            <p>Projected Growth: ${job["Projected Growth"]}%</p>
+                            <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p>
+                        </div>`;
+                });
+                d3.select("#jobsPanel").html(panelContent);
+            });
+    });
+}
+
+
+/* function handleNodeDoubleClick(event, clickedNode) {
+    console.log("Double-clicked:", clickedNode);
+    d3.json(`/similar_occupations/${clickedNode.id}`).then(similarOccupations => {
+        console.log("Fetched similar occupations:", similarOccupations);
         // Hide all nodes and show only the clicked node and similar nodes
         svg.selectAll(".occupation")
            .transition()
            .duration(1000)
            .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
         
+           
         // TODO: Update the visualization to form the orbital map
         //createOrbitalMap(clickedNode, similarOccupations, occupationData);
     });
 }
+ */
+
 /* 
 function createOrbitalMap(centerNode, similarOccupations, occupationData) {
     // Position the center node
