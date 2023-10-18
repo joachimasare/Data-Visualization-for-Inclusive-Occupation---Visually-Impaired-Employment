@@ -61,11 +61,13 @@ def explore():
 
 @app.route('/occupations', methods=['GET'])
 def get_occupations():
-    occupations = data[['SOC Code', 'SOC Group', 'Blind Employed', 'Occupational Title_IDB', 'Occupational Title_BLS']].copy()
+    occupations = data[['SOC Code', 'SOC Group', 'Blind Employed', 'Occupational Title_IDB', 'Occupational Title_BLS', 'Employment', 'Projected Growth']].copy()
     occupations['Occupational Title'] = np.where(occupations['Blind Employed'] == 1, 
                                                  occupations['Occupational Title_IDB'], 
                                                  occupations['Occupational Title_BLS'])
-    occupations = occupations[['SOC Code', 'SOC Group', 'Blind Employed', 'Occupational Title']]
+    occupations['Employment(2022)'] = occupations['Employment']
+    occupations['Projected Growth'] = occupations['Projected Growth'].astype(int)
+    occupations = occupations[['SOC Code', 'SOC Group', 'Blind Employed', 'Occupational Title', 'Employment(2022)', 'Projected Growth']]
     occupations = occupations.where(pd.notna(occupations), None)
     occupations_dict = occupations.to_dict(orient='records')
     return jsonify(occupations_dict)

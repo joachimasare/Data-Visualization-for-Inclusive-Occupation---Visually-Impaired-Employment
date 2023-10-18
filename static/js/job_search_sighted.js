@@ -6,6 +6,7 @@ const svg = d3.select("#sightedgraph")
 // Create a container for the visualization
 const container = svg.append("g");
 
+let simulation;
 let clusterData = [];
 
 // Set up the zoom behavior
@@ -15,7 +16,6 @@ const zoomBehavior = d3.zoom()
 
 // Add zoom behavior to the SVG node
 svg.call(zoomBehavior);
-
 
 function zoomed({ transform }) {
     container.attr("transform", transform);
@@ -40,13 +40,11 @@ function zoomToGroup(cluster) {
     const dy = maxY - minY;
     const x = minX + dx / 2;
     const y = minY + dy / 2;
-    const scale = 0.9 / Math.max(dx / window.innerWidth, dy / (window.innerHeight - 64 - 32));
+    const scale = 0.5 / Math.max(dx / window.innerWidth, dy / (window.innerHeight - 64 - 32));
     const translate = [window.innerWidth / 2 - scale * x, (window.innerHeight - 64 - 32) / 2 - scale * y];
 
     svg.transition().duration(1000).call(zoomBehavior.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
-
-
 
 
 function filterData() {
@@ -128,31 +126,29 @@ const tooltip = d3.select("body")
     .style("box-shadow", "0px 0px 6px #aaa")
     .text("Tooltip");
 
+let occupationData = [];
 d3.json("/occupations").then(function(allOccupations) {
     const nodes = allOccupations.map(occupation => ({
         id: occupation["SOC Code"],
         title: occupation["Occupational Title"],
         group: occupation["SOC Group"],
-        blind_work: occupation["Blind Employed"]
+        blind_work: occupation["Blind Employed"],
+        employment: occupation["Employment(2022)"],
+        projected_growth: occupation["Projected Growth"]
+        
     }));
 
-/* d3.json("/occupations").then(function(allSimiliar) {
-    const nodes = allSimilar.map(similar => ({
-        id: similar["SOC Code"],
-        title: similar["Occupational Title"],
-        score: similar["Similarity Score'"]
-    })); */
 
     // Create a force simulation for the occupation circles
-    const simulation = d3.forceSimulation(nodes)
+    simulation = d3.forceSimulation(nodes)
         .force("center", d3.forceCenter(window.innerWidth / 2, (window.innerHeight - 64 - 32) / 2))
         .force("collide", d3.forceCollide().radius(4.5)) // Radius of 5 to avoid overlapping
         .on("tick", ticked);
 
     function ticked() {
         svg.selectAll(".occupation")
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
+            .attr("cx", d => d.fx || d.x)
+            .attr("cy", d => d.fy || d.y);
     }
 
     visualizeData(container, nodes);
@@ -282,57 +278,126 @@ function visualizeData(svg, occupationData) {
     })
         .on("dblclick", handleNodeDoubleClick);
 
+    addLegend();
+
 }
-function handleNodeDoubleClick(d) {
-    console.log("Clicked node data:", d); // To validate the data of the clicked node
-    
-    // Fetch similar occupations using the API with the extracted SOC Code
-    d3.json(`/similar_occupations/${socCode}`).then(similarOccupations => {
-        
-        // Extract SOC Codes from the fetched similar occupations
-        const similarSocCodes = similarOccupations.map(o => o['SOC Code']);
 
-        // Set opacity for all nodes to 0, excluding the clicked and similar ones
+function handleNodeDoubleClick(event, clickedNode) {
+    console.log("Double-clicked:", clickedNode);
+    d3.json(`/similar_occupations/${clickedNode.id}`).then(similarOccupations => {
         svg.selectAll(".occupation")
-            .filter(n => ![socCode, ...similarSocCodes].includes(n['SOC Code']))
             .transition()
-            .duration(1000) 
-            .style("opacity", 0);
-
-        // Set opacity for the clicked node to 1, move it to the center, and color it white
-        d3.select(`#${CSS.escape(socCode)}`)
-            .transition()
-            .duration(1000) 
-            .style("opacity", 1)
-            .attr("cx", width / 2)
-            .attr("cy", height / 2)
-            .style("fill", "white");
-
-        // Define a radius for orbital positions of new nodes
-        const radius = 150; // adjust as needed
+            .duration(1000)
+            .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
         
-        // Iterate over the similar occupations and position them in orbit
-        similarOccupations.forEach((o, i, arr) => {
-            const angle = i * 2 * Math.PI / arr.length;
-            o.x = width / 2 + radius * Math.cos(angle);
-            o.y = height / 2 + radius * Math.sin(angle);
+        d3.select("#recommendedJobsBtn")
+            .classed("hidden", false)
+            .style("transform", "translateY(0%)");
 
-            // Select existing node with the SOC Code, then animate and position it
-            d3.select(`#${CSS.escape(o['SOC Code'])}`)
-                .transition()
-                .duration(1000)
-                .attr("cx", o.x)
-                .attr("cy", o.y);
-            
-            // Add labels, if desired
-            svg.append("text")
-                .attr("class", "newOccupationText")
-                .attr("x", o.x)
-                .attr("y", o.y - 15)
-                .text(o['Occupational Title']) 
-                .style("fill", "black")
-                .style("text-anchor", "middle")
-                .style("font-size", "10px");
+        let panelContent = "";
+        similarOccupations.forEach(job => {
+            const jobMarketShare = (job["Employment(2022)"] / 147886000) * 100;
+            panelContent += `
+                <div class="jobDetail">
+                    <h3>${job["Occupational Title"]}</h3>
+                    <p>SOC Code: ${job["SOC Code"]}</p>
+                    <p>Employment (2022): ${job["Employment(2022)"]}</p>
+                    <p>Projected Growth: ${job["Projected Growth"]}%</p>
+                    <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p>
+                </div>`;
         });
+        d3.select("#jobsPanel").html(panelContent);
     });
 }
+
+d3.select("#recommendedJobsBtn").on("click", function() {
+    d3.select("#jobsPanel").classed("active", function(d) {
+        return !d3.select(this).classed("active");
+    });
+});
+
+
+function addLegend() {
+    const legendData = [
+        { color: "#CDFF64", label: "Blind Employed" },
+        { color: "#585858", label: "No Blind Employed" }
+    ];
+
+    const legendWidth = 150; // Assuming a rough width for the legend
+    const xOffset = window.innerWidth - legendWidth - 30; // Adjust the 30 for padding from the right edge
+
+    const legend = svg.append("g")
+                      .attr("transform", `translate(${xOffset}, ${window.innerHeight - 150})`); // Adjust the vertical position if needed
+
+    const legendEntries = legend.selectAll(".legendEntry")
+                                .data(legendData)
+                                .enter()
+                                .append("g")
+                                .attr("class", "legendEntry")
+                                .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+    // Using circle
+    legendEntries.append("circle")
+                 .attr("cx", 0)
+                 .attr("cy", 0)
+                 .attr("r", 6) // radius of circle
+                 .style("fill", d => d.color);
+
+    legendEntries.append("text")
+                 .attr("x", 15) // Adjust to place text beside the circle
+                 .attr("y", 5) // Small adjustment to vertically align text with circle center
+                 .text(d => d.label)
+                 .attr("fill", "#fff")
+                 .style("font-size", "12px");
+}
+
+
+/* function handleNodeDoubleClick(event, clickedNode) {
+    console.log("Double-clicked:", clickedNode);
+    d3.json(`/similar_occupations/${clickedNode.id}`).then(similarOccupations => {
+        console.log("Fetched similar occupations:", similarOccupations);
+        // Hide all nodes and show only the clicked node and similar nodes
+        svg.selectAll(".occupation")
+           .transition()
+           .duration(1000)
+           .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
+        
+           
+        // TODO: Update the visualization to form the orbital map
+        //createOrbitalMap(clickedNode, similarOccupations, occupationData);
+    });
+}
+ */
+
+/* 
+function createOrbitalMap(centerNode, similarOccupations, occupationData) {
+    // Position the center node
+    centerNode.fx = window.innerWidth / 2;
+    centerNode.fy = (window.innerHeight - 64 - 32) / 2;
+    
+    // Position the similar nodes in orbits around the center node
+    similarOccupations.forEach((simNode, i) => {
+        const theta = i * (2 * Math.PI) / similarOccupations.length;
+        const orbitRadius = 100 + i * 30; // Radius increased for each subsequent node
+        const nodeInOccupationData = occupationData.find(d => d.id === simNode["SOC Code"]);
+        
+        if (nodeInOccupationData) {
+            nodeInOccupationData.fx = centerNode.fx + Math.cos(theta) * orbitRadius;
+            nodeInOccupationData.fy = centerNode.fy + Math.sin(theta) * orbitRadius;
+        } else {
+            console.warn(`Node not found in occupationData: ${simNode["SOC Code"]}`);
+        }
+    });
+    
+    // Update the visualization
+    svg.selectAll(".occupation")
+       .data(occupationData, d => d.id)  // Ensure the data is updated using a key function
+       .transition()
+       .duration(1000)
+       .attr("cx", d => d.fx || d.x)
+       .attr("cy", d => d.fy || d.y);
+
+    // Consider stopping the simulation to prevent it from overriding your manual positioning
+    simulation.stop();
+}
+ */

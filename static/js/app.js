@@ -119,6 +119,14 @@ function updateColors() {
         node.attr("fill", d => d.blind_work ? "#CDFF64" : "#363636");
         link.attr("stroke", "#989898");
     }
+
+    if (colorMode) {
+        d3.select("#socLegend").style("display", "block");
+        d3.select("#blindLegend").style("display", "none");
+    } else {
+        d3.select("#socLegend").style("display", "none");
+        d3.select("#blindLegend").style("display", "block");
+    }
 }
 
 
@@ -127,6 +135,69 @@ const svg = d3.select("#graph")
     .attr("height", window.innerHeight - 64 - 32); // Adjust height by subtracting the padding and margin
 
 svg.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
+
+// Define the SOC groups legend
+// Define the SOC groups legend at the top-left
+const socLegendGroup = svg.append("g")
+    .attr("id", "socLegend")
+    .attr("transform", "translate(20, 20)");  // Adjusts positioning
+
+let yOffset = 0;
+for (const [group, color] of Object.entries(colorMapping)) {
+    const legendEntry = socLegendGroup.append("g")
+        .attr("transform", `translate(0, ${yOffset})`);
+    
+    legendEntry.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 10)
+        .attr("r", 10)
+        .attr("fill", color);
+    
+    legendEntry.append("text")
+        .attr("x", 30)
+        .attr("y", 15)
+        .attr("fill", "#fff")
+        .attr("font-size", "12px")
+        .text(group);
+
+    yOffset += 25;  // Adjusts spacing between entries
+}
+
+
+// Define the blind work suitability legend
+// Define the blind work suitability legend at the top-left (same position as the SOC groups legend)
+const blindLegendGroup = svg.append("g")
+    .attr("id", "blindLegend")
+    .attr("transform", "translate(20, 20)")
+    .style("display", "none");  // Initially hidden
+
+const blindColors = {
+    "Blind Employed": "#CDFF64",
+    "No Blind Employed": "#363636"
+};
+
+yOffset = 0;
+for (const [description, color] of Object.entries(blindColors)) {
+    const legendEntry = blindLegendGroup.append("g")
+        .attr("transform", `translate(0, ${yOffset})`);
+    
+    legendEntry.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 10)
+        .attr("r", 10)
+        .attr("fill", color);
+    
+    legendEntry.append("text")
+        .attr("x", 30)
+        .attr("y", 15)
+        .attr("fill", "#fff")
+        .attr("font-size", "12px")
+        .text(description);
+
+    yOffset += 25;  // Adjusts spacing between entries
+}
+
+
 
 const defs = svg.append('defs');
 
