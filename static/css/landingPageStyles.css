@@ -1,0 +1,116 @@
+/* Landing Page Styles */
+
+.landing-wrapper {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background: #161B29;
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.blur-gradient {
+    width: 482.59px;
+    height: 615.14px;
+    position: absolute;
+    bottom: 10%;
+    left: 15%;
+    transform: rotate(30deg);
+    background: linear-gradient(90deg, rgba(26, 41, 128, 0.20) 0%, rgba(38, 208, 206, 0.20) 100%);
+    box-shadow: 650px 650px 650px;
+    border-radius: 200px;
+    filter: blur(650px);
+}
+
+.content {
+    position: relative;
+    width: 80%;
+    max-width: 1440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-text {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 25px;
+    margin-bottom: 2rem;
+}
+
+.mode-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.mode {
+    width: 280px;
+    height: 280px;
+    position: relative;
+    border-radius: 9999px;
+    border: 3.93px white solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mode span {
+    color: #00F6FF;
+    font-size: 27.51px;
+    font-weight: 300;
+    line-height: 34.44px;
+}
+
+.header-braille {
+    font-size: 30px;
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+.welcome-text {
+    font-size: 110.48px;
+    font-weight: 700;
+    letter-spacing: 2.21px;
+    margin-bottom: 1rem;
+}
+
+.welcome-braille {
+    font-size: 80px;
+    font-family: 'Helvetica', sans-serif;
+    font-weight: 400;
+}
+
+.footer-info {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+}
+
+.creators {
+    color: #BDBDBD;
+    font-size: 17.19px;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+
+.creator-details span {
+    color: #00F6FF;
+    font-size: 9.82px;
+    text-transform: capitalize;
+}
+
+.footer-bar {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    text-align: right;
+    font-size: 30px;
+    font-weight: 700;
+}
+

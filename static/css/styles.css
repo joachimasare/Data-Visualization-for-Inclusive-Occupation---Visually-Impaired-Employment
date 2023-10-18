@@ -1,3 +1,23 @@
+
+
+#jobsPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 300px; /* Adjust as needed */
+    background-color: #1c1c1c;
+    overflow-y: auto;
+    padding: 20px;
+    z-index: 2000; /* Ensure it's above other elements but below the Recommended jobs button */
+    transform: translateX(-100%); /* Initially hide it by pushing it to the left */
+    transition: transform 0.3s ease;
+}
+
+#jobsPanel.active {
+    transform: translateX(0);
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #1c284d;
@@ -148,9 +168,7 @@ nav a {
     margin: 0.3rem 0;
 }*/
 
-#jobsPanel.active {
-    transform: translateX(0);
-}
+
 
 
 #graph {
@@ -194,17 +212,4 @@ nav a {
     margin: 0.5rem 0.5rem;     /* added 0.5rem to both sides for space */
 }
 
-#jobsPanel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 300px; /* Adjust as needed */
-    background-color: #1c1c1c;
-    overflow-y: auto;
-    padding: 20px;
-    z-index: 1000; /* Ensure it's above other elements but below the Recommended jobs button */
-    transform: translateX(-100%); /* Initially hide it by pushing it to the left */
-    transition: transform 0.3s ease;
-}
 

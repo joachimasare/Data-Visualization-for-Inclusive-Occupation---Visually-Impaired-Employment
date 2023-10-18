@@ -278,38 +278,77 @@ function visualizeData(svg, occupationData) {
     })
         .on("dblclick", handleNodeDoubleClick);
 
+    addLegend();
+
 }
 
 function handleNodeDoubleClick(event, clickedNode) {
     console.log("Double-clicked:", clickedNode);
     d3.json(`/similar_occupations/${clickedNode.id}`).then(similarOccupations => {
-        console.log("Fetched similar occupations:", similarOccupations);
         svg.selectAll(".occupation")
             .transition()
             .duration(1000)
             .style("opacity", d => (d.id === clickedNode.id || similarOccupations.find(o => o["SOC Code"] === d.id)) ? 1 : 0);
-        //svg.selectAll(".cluster-label").style("opacity", 1);
-
+        
         d3.select("#recommendedJobsBtn")
             .classed("hidden", false)
-            .style("transform", "translateY(0%)")
-            .on("click", function() {
-                d3.select("#jobsPanel").style("transform", "translateX(0%)");
-                let panelContent = "";
-                similarOccupations.forEach(job => {
-                    const jobMarketShare = (job["Employment(2022)"] / 147886000) * 100;
-                    panelContent += `
-                        <div class="jobDetail">
-                            <h3>${job["Occupational Title"]}</h3>
-                            <p>SOC Code: ${job["SOC Code"]}</p>
-                            <p>Employment (2022): ${job["Employment(2022)"]}</p>
-                            <p>Projected Growth: ${job["Projected Growth"]}%</p>
-                            <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p>
-                        </div>`;
-                });
-                d3.select("#jobsPanel").html(panelContent);
-            });
+            .style("transform", "translateY(0%)");
+
+        let panelContent = "";
+        similarOccupations.forEach(job => {
+            const jobMarketShare = (job["Employment(2022)"] / 147886000) * 100;
+            panelContent += `
+                <div class="jobDetail">
+                    <h3>${job["Occupational Title"]}</h3>
+                    <p>SOC Code: ${job["SOC Code"]}</p>
+                    <p>Employment (2022): ${job["Employment(2022)"]}</p>
+                    <p>Projected Growth: ${job["Projected Growth"]}%</p>
+                    <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p>
+                </div>`;
+        });
+        d3.select("#jobsPanel").html(panelContent);
     });
+}
+
+d3.select("#recommendedJobsBtn").on("click", function() {
+    d3.select("#jobsPanel").classed("active", function(d) {
+        return !d3.select(this).classed("active");
+    });
+});
+
+
+function addLegend() {
+    const legendData = [
+        { color: "#CDFF64", label: "Blind Employed" },
+        { color: "#585858", label: "No Blind Employed" }
+    ];
+
+    const legendWidth = 150; // Assuming a rough width for the legend
+    const xOffset = window.innerWidth - legendWidth - 30; // Adjust the 30 for padding from the right edge
+
+    const legend = svg.append("g")
+                      .attr("transform", `translate(${xOffset}, ${window.innerHeight - 150})`); // Adjust the vertical position if needed
+
+    const legendEntries = legend.selectAll(".legendEntry")
+                                .data(legendData)
+                                .enter()
+                                .append("g")
+                                .attr("class", "legendEntry")
+                                .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+    // Using circle
+    legendEntries.append("circle")
+                 .attr("cx", 0)
+                 .attr("cy", 0)
+                 .attr("r", 6) // radius of circle
+                 .style("fill", d => d.color);
+
+    legendEntries.append("text")
+                 .attr("x", 15) // Adjust to place text beside the circle
+                 .attr("y", 5) // Small adjustment to vertically align text with circle center
+                 .text(d => d.label)
+                 .attr("fill", "#fff")
+                 .style("font-size", "12px");
 }
 
 
