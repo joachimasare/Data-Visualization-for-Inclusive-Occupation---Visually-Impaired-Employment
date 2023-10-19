@@ -1,0 +1,4 @@
+services:
+- type: web
+  name: flask-app
+  env: docker
