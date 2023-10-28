@@ -164,7 +164,6 @@ for (const [group, color] of Object.entries(colorMapping)) {
 }
 
 
-// Define the blind work suitability legend
 // Define the blind work suitability legend at the top-left (same position as the SOC groups legend)
 const blindLegendGroup = svg.append("g")
     .attr("id", "blindLegend")
