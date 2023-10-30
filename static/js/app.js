@@ -136,7 +136,6 @@ const svg = d3.select("#graph")
 
 svg.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
 
-// Define the SOC groups legend
 // Define the SOC groups legend at the top-left
 const socLegendGroup = svg.append("g")
     .attr("id", "socLegend")

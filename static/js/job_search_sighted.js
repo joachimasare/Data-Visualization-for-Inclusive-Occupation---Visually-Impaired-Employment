@@ -3,18 +3,18 @@ const svg = d3.select("#sightedgraph")
     .attr("height", window.innerHeight - 64 - 32)
     .attr("viewBox", [0, 0, window.innerWidth, window.innerHeight - 64 - 32]);
 
-// Create a container for the visualization
+// container for the visualization
 const container = svg.append("g");
 
 let simulation;
 let clusterData = [];
 
-// Set up the zoom behavior
+// zoom behavior set up
 const zoomBehavior = d3.zoom()
     .scaleExtent([0.5, 5])  // The range of zoom scaling (min and max zoom scale)
     .on("zoom", zoomed);
 
-// Add zoom behavior to the SVG node
+// Adding zoom behavior to the SVG node
 svg.call(zoomBehavior);
 
 function zoomed({ transform }) {

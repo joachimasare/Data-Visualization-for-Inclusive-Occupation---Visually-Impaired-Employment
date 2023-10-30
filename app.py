@@ -6,7 +6,7 @@ import numpy as np
 
 app = Flask(__name__)
 CORS(app)
-# Load preprocessed data from previous code
+# To load preprocessed data from previous code
 data = pd.read_csv('all_blind_soc_skills.csv')  
 
 # Define SOC groups - all 22 major SOC groups. made a dict of first two digits and group
@@ -37,8 +37,6 @@ soc_groups = {
 
 # Map SOC codes to SOC groups
 data['SOC Group'] = data['SOC Code'].apply(lambda x: soc_groups[x.split('-')[0]])
-
-# Additional data preprocessing here...
 
 # Compute similarity matrix
 skills_cols = [col for col in data.columns if '_IM' in col or '_LV' in col]
