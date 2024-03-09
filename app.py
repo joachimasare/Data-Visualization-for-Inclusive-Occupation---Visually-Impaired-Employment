@@ -74,11 +74,11 @@ def get_occupations():
 def get_similar_occupations(soc_code):
     idx = data[data['SOC Code'] == soc_code].index[0]
     similar_idx = np.argsort(similarity_matrix[idx])[-9:-1][::-1]
-    similar_occupations = data.iloc[similar_idx][['SOC Code', 'Occupational Title_IDB', 'Occupational Title_BLS', 'Blind Employed']].copy()
+    similar_occupations = data.iloc[similar_idx][['SOC Code', 'Occupational Title_IDB', 'Occupational Title_BLS', 'Blind Employed', 'Employment', 'Projected Growth', 'Projected Growth Text']].copy()
     similar_occupations['Occupational Title'] = np.where(similar_occupations['Blind Employed'] == 1, 
                                                          similar_occupations['Occupational Title_IDB'], 
                                                          similar_occupations['Occupational Title_BLS'])
-    similar_occupations = similar_occupations[['SOC Code', 'Occupational Title']]
+    similar_occupations = similar_occupations[['SOC Code', 'Occupational Title', 'Employment', 'Projected Growth', 'Projected Growth Text']]
     similar_occupations = similar_occupations.where(pd.notna(similar_occupations), None)
     
     # Create a list to store similar occupations with similarity scores

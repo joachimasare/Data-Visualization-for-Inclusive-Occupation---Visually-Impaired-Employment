@@ -296,14 +296,14 @@ function handleNodeDoubleClick(event, clickedNode) {
 
         let panelContent = "";
         similarOccupations.forEach(job => {
-            const jobMarketShare = (job["Employment(2022)"] / 147886000) * 100;
+            const jobMarketShare = (job["Employment"] / 147886000) * 100;
             panelContent += `
-                <div class="jobDetail">
+                <div class="jobDetail" style="color: #fff;font-size:14px;">
                     <h3>${job["Occupational Title"]}</h3>
                     <p>SOC Code: ${job["SOC Code"]}</p>
-                    <p>Employment (2022): ${job["Employment(2022)"]}</p>
-                    <p>Projected Growth: ${job["Projected Growth"]}%</p>
-                    <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p>
+                    <p>Employment (2022): ${job["Employment"]}</p>
+                    <p>Projected Growth: ${job["Projected Growth"]}%, ${job["Projected Growth Text"]}</p>
+                    <p>Job Market Share: ${jobMarketShare.toFixed(2)}%</p></br>
                 </div>`;
         });
         d3.select("#jobsPanel").html(panelContent);
