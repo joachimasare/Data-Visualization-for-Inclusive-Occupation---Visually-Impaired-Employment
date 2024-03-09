@@ -1,4 +1,22 @@
+html {
+    scrollbar-width: thin; /* Options are 'auto', 'thin', and 'none' */
+    scrollbar-color: #888 transparent; /* Thumb and track color */
+}
 
+::-webkit-scrollbar-track {
+    background-color: transparent; /* Making the track transparent */
+}
+
+/* This styles the scrollbar handle */
+::-webkit-scrollbar-thumb {
+    background-color: #888 transparent; /* Color of the scrollbar thumb */
+    border-radius: 2px; /* Optional: Rounded corners for the scrollbar thumb */
+}
+
+/* This styles the scrollbar itself */
+::-webkit-scrollbar {
+    width: 1px; /* Width of the scrollbar */
+}
 
 #jobsPanel {
     position: fixed;
