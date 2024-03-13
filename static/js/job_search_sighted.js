@@ -294,7 +294,7 @@ function handleNodeDoubleClick(event, clickedNode) {
             .classed("hidden", false)
             .style("transform", "translateY(0%)");
 
-        let panelContent = "";
+        let panelContent = '<div class="panel-title" style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 10px;">Skill Matching Occupations</div>';
         similarOccupations.forEach(job => {
             const jobMarketShare = (job["Employment"] / 147886000) * 100;
             panelContent += `
